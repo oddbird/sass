@@ -20,10 +20,11 @@ This proposal improves the indented syntax format, allowing multiline expression
   * [Existing Syntax](#existing-syntax)
     * [Syntax-specific productions](#syntax-specific-productions)
       * [Indented Format](#indented-format)
-      * [SCSS Format](#scss-format)
+      * [Scss Format](#scss-format)
     * [Statement](#statement)
     * [Block](#block)
     * [ArgumentDeclaration](#argumentdeclaration)
+  * [Clarified Syntax](#clarified-syntax)
   * [Proposed Syntax](#proposed-syntax)
 * [Semantics](#semantics)
 
@@ -97,7 +98,7 @@ The syntax impacted by these changes has not been specified, so this proposal fi
 **BlockEnd**       ::= Dedent
 </pre></x>
 
-##### SCSS Format
+##### Scss Format
 
 <x><pre>
 **StatementEnd**   ::= ';' | BlockEnd
@@ -129,6 +130,67 @@ ArgumentDeclaration ::= '(' CommaListExpression ')'
 </pre></x>
 
 Productions for optional or keyword arguments are omitted, as they are orthogonal to this proposal.
+
+### Clarified Syntax
+
+This proposal defines replacements for productions that only defined syntax for the Scss format.
+
+[StandardDeclaration] is replaced.
+
+[StandardDeclaration]: ../spec/declarations.md#syntax
+
+<x><pre>
+**StandardDeclaration** ::= [InterpolatedIdentifier]¹ ':' (Value | Value? BlockStart Statements BlockEnd )
+</pre></x>
+
+1. This may not begin with "--".
+
+[UnknownAtRule] is replaced.
+
+[UnknownAtRule]: ../spec/at-rules/unknown.md#syntax
+
+<x><pre>
+**UnknownAtRule** ::= '@' [InterpolatedIdentifier] InterpolatedValue?
+&#32;                   (BlockStart Statements BlockEnd)?
+</pre></x>
+
+[InterpolatedIdentifier]: ../spec/syntax.md#interpolatedidentifier
+
+[MixinRule] is replaced.
+
+[MixinRule]: ../spec/at-rules/mixin.md#syntax
+
+<x><pre>
+**MixinRule** ::= '@mixin' [\<ident-token>] ArgumentDeclaration? BlockStart Statements BlockEnd
+</pre></x>
+
+[ContentBlock] is replaced.
+
+[ContentBlock]: ../spec/at-rules/mixin.md#syntax-1
+
+<x><pre>
+**ContentBlock**     ::= UsingDeclaration? BlockStart Statements BlockEnd
+</pre></x>
+
+[FunctionRule] is replaced.
+
+[FunctionRule]: ../spec/at-rules/function.md#syntax
+
+<x><pre>
+**FunctionRule** ::= '@function' [\<ident-token>] ArgumentDeclaration BlockStart Statements BlockEnd
+</pre></x>
+
+[\<ident-token>]: https://drafts.csswg.org/css-syntax-3/#ident-token-diagram
+
+[ForBlock] is replaced.
+
+[ForBlock]: ../spec/at-rules/for.md#syntax
+
+<x><pre>
+**ForBlock**           ::= BlockStart Statements BlockEnd
+</pre></x>
+
+> TODO: Should this be BlockContents instead of Statements?
 
 ### Proposed Syntax
 
