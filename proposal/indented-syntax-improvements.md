@@ -8,9 +8,11 @@ This proposal improves the indented syntax format, allowing multiline expression
 
 * [Background](#background)
 * [Summary](#summary)
-  * [Places where a line break must create a statement break:](#places-where-a-line-break-must-create-a-statement-break)
+  * [Places where a line break must create a statement break](#places-where-a-line-break-must-create-a-statement-break)
     * [After a non-enclosed list begins](#after-a-non-enclosed-list-begins)
-    * [Custom property values, except inside an InterpolatedDeclarationValue.](#custom-property-values-except-inside-an-interpolateddeclarationvalue)
+      * [Lists in at rules](#lists-in-at-rules)
+      * [Lists in arguments](#lists-in-arguments)
+    * [Custom property values, except inside an InterpolatedDeclarationValue](#custom-property-values-except-inside-an-interpolateddeclarationvalue)
     * [Anywhere in an unwrapped expression expect immediately after an operator](#anywhere-in-an-unwrapped-expression-expect-immediately-after-an-operator)
     * [In an unwrapped condition of an `@if`](#in-an-unwrapped-condition-of-an-if)
   * [Design Decisions](#design-decisions)
@@ -52,18 +54,21 @@ Comma separated lists can not use a trailing comma to signify that a list will
 continue after the line break, as this would break existing stylesheets with
 trailing commas.
 
+##### Lists in at rules
+
 This rule also applies to lists in an @each declaration. `@each $size in \n 12px
 24px` will not be supported, but the wrapped `@each $size in \n (12px 24px)`
-will be. This rule also applies to lists in an @each declaration. `@each $key,
-\nvalue in \n $map` will not be supported, but the wrapped `@each ($key, $value)
-in $map` will be.
+will be. `@each $key, \nvalue in \n $map` will not be supported, but the wrapped
+`@each ($key, $value) in $map` will be.
+
+##### Lists in arguments
 
 Because arguments to functions and mixins are already wrapped in `()`, line
 breaks in arguments do not need to cause a statement break.
 
 #### Custom property values, except inside an InterpolatedDeclarationValue
 
-Interpolations are wrapped in `#{}` so line breaks do not need to end statements
+Interpolations are wrapped in `#{}` so line breaks do not need to end statements.
 
 #### Anywhere in an unwrapped expression expect immediately after an operator
 
