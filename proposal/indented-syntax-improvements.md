@@ -40,6 +40,15 @@ it presents authoring challenges, specifically around long lists.
 
 > This section is non-normative.
 
+In the Sass indented syntax, line breaks always end a statement, which limits
+how authors can format their code. However, the parser can tell from context
+whether a statement can end at a given point. This document proposes that line
+breaks only end statements when a statement can end, and in any other case, a
+line break is treated as continuing white space.
+
+In addition, this proposal adds semicolons to the indented syntax as explicit
+statement ends, and allows curly braces to wrap blocks.
+
 ### Places where a line break must create a statement break
 
 #### After a non-enclosed list begins
@@ -126,8 +135,10 @@ and`UnknownAtRule`.
 #### ArgumentDeclaration
 
 <x><pre>
-ArgumentDeclaration ::= '(' CommaListExpression ')'
+ArgumentDeclaration ::= '(' [CommaListExpression] ')'
 </pre></x>
+
+[CommaListExpression]: ../spec/types/list.md#syntax
 
 Productions for optional or keyword arguments are omitted, as they are orthogonal to this proposal.
 
@@ -143,6 +154,8 @@ This proposal defines replacements for productions that only defined syntax for 
 **StandardDeclaration** ::= [InterpolatedIdentifier]¹ ':' (Value | Value? BlockStart Statements BlockEnd )
 </pre></x>
 
+[InterpolatedIdentifier]: ../spec/syntax.md#interpolatedidentifier
+
 1. This may not begin with "--".
 
 [UnknownAtRule] is replaced.
@@ -153,8 +166,6 @@ This proposal defines replacements for productions that only defined syntax for 
 **UnknownAtRule** ::= '@' [InterpolatedIdentifier] InterpolatedValue?
 &#32;                   (BlockStart Statements BlockEnd)?
 </pre></x>
-
-[InterpolatedIdentifier]: ../spec/syntax.md#interpolatedidentifier
 
 [MixinRule] is replaced.
 
