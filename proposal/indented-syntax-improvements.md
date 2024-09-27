@@ -10,23 +10,27 @@ This proposal improves the indented syntax format, allowing multiline expression
 * [Summary](#summary)
   * [Places where a line break must create a statement break](#places-where-a-line-break-must-create-a-statement-break)
     * [After a non-enclosed list begins](#after-a-non-enclosed-list-begins)
-      * [Lists in at rules](#lists-in-at-rules)
       * [Lists in arguments](#lists-in-arguments)
     * [Custom property values, except inside an InterpolatedDeclarationValue](#custom-property-values-except-inside-an-interpolateddeclarationvalue)
-    * [Anywhere in an unwrapped expression expect immediately after an operator](#anywhere-in-an-unwrapped-expression-expect-immediately-after-an-operator)
-    * [In an unwrapped condition of an `@if`](#in-an-unwrapped-condition-of-an-if)
+    * [Binary operators](#binary-operators)
+    * [At Rules](#at-rules)
   * [Design Decisions](#design-decisions)
 * [Syntax](#syntax)
   * [Existing Syntax](#existing-syntax)
     * [Syntax-specific productions](#syntax-specific-productions)
-      * [Indented Format](#indented-format)
-      * [Scss Format](#scss-format)
+      * [Indented format](#indented-format)
+      * [SCSS format](#scss-format)
     * [Statement](#statement)
     * [Block](#block)
     * [ArgumentDeclaration](#argumentdeclaration)
+    * [InterpolatedDeclarationValue](#interpolateddeclarationvalue)
+    * [OrderOfOperationsExpression](#orderofoperationsexpression)
+    * [MapExpression](#mapexpression)
   * [Clarified Syntax](#clarified-syntax)
-  * [Proposed Syntax](#proposed-syntax)
-* [Semantics](#semantics)
+  * [Proposed Syntax Changes](#proposed-syntax-changes)
+* [Procedures](#procedures)
+  * [Parsing text as Sass](#parsing-text-as-sass)
+  * [Productions of `StatementMayEnd`](#productions-of-statementmayend)
 
 ## Background
 
@@ -64,13 +68,6 @@ Comma separated lists can not use a trailing comma to signify that a list will
 continue after the line break, as this would break existing stylesheets with
 trailing commas.
 
-##### Lists in at rules
-
-This rule also applies to lists in an @each declaration. `@each $size in \n 12px
-24px` will not be supported, but the wrapped `@each $size in \n (12px 24px)`
-will be. `@each $key, \nvalue in \n $map` will not be supported, but the wrapped
-`@each ($key, $value) in $map` will be.
-
 ##### Lists in arguments
 
 Because arguments to functions and mixins are already wrapped in `()`, line
@@ -80,13 +77,21 @@ breaks in arguments do not need to cause a statement break.
 
 Interpolations are wrapped in `#{}` so line breaks do not need to end statements.
 
-#### Anywhere in an unwrapped expression expect immediately after an operator
+#### Binary operators
+
+Line breaks must cause statement breaks before a binary operator, unless it is wrapped in `()`.
 
 `3\n+ 4` doesn't have a clear ending. `(3\n+ 4)` or `3 +\n4` would work.
 
-#### In an unwrapped condition of an `@if`
+`@if $a \n and $b` can not be parsed to determine when the statement has ended. `@if ($a \n and $b)` can be parsed.
 
-`@if $a and \n $b` can not be parsed to determine when the statement has ended. `@if ($a \n and $b)` can be parsed.
+#### At Rules
+
+For any at rule that is supported by native CSS, line breaks after the `@` and
+before a block or statement end are not supported. This includes `@include`,
+(which overlaps with Sass), `@supports`, `@media`, `@keyframes` and any unknown at rule.
+
+These rules should be emitted as is, with no special handling from Sass.
 
 ### Design Decisions
 
@@ -98,27 +103,29 @@ The syntax impacted by these changes has not been specified, so this proposal fi
 
 #### Syntax-specific productions
 
-##### Indented Format
+##### Indented format
 
 <x><pre>
 **NewLine**        ::= LineFeed | CarriageReturn | FormFeed
 **StatementEnd**   ::= NewLine
-**BlockStart**     ::= NewLine Indent
+**BlockStart**     ::= Indent
 **BlockEnd**       ::= Dedent
 </pre></x>
 
-##### Scss Format
+##### SCSS format
 
 <x><pre>
-**StatementEnd**   ::= ';' | BlockEnd
-**BlockStart**     ::= '{'
-**BlockEnd**       ::= '}'
+**ExplicitStatementEnd**   ::= ';'
+**StatementEnd**           ::= ExplicitStatementEnd | BlockEnd
+**BlockStart**             ::= '{'
+**BlockEnd**               ::= '}'
 </pre></x>
 
 #### Statement
 
 <x><pre>
-**Statement**      ::= Declaration StatementEnd
+**Statements**     ::= Statement+
+**Statement**      ::= Value StatementEnd
 </pre></x>
 
 #### Block
@@ -142,9 +149,29 @@ ArgumentDeclaration ::= '(' [CommaListExpression] ')'
 
 Productions for optional or keyword arguments are omitted, as they are orthogonal to this proposal.
 
+#### InterpolatedDeclarationValue
+
+<x><pre>
+InterpolatedDeclarationValue ::= (Interpolation | String)+
+</pre></x>
+
+#### OrderOfOperationsExpression
+
+<x><pre>
+OrderOfOperationsExpression ::= '(' Statements ')'
+</pre></x>
+
+#### MapExpression
+
+<x><pre>
+MapExpression ::= '(' [InterpolatedIdentifier] ':' Value) (',' [InterpolatedIdentifier] ':' Value)* ')'
+</pre></x>
+
+[InterpolatedIdentifier]: ../spec/syntax.md#interpolatedidentifier
+
 ### Clarified Syntax
 
-This proposal defines replacements for productions that only defined syntax for the Scss format.
+This proposal defines replacements for productions that only defined syntax for the SCSS format.
 
 [StandardDeclaration] is replaced.
 
@@ -153,8 +180,6 @@ This proposal defines replacements for productions that only defined syntax for 
 <x><pre>
 **StandardDeclaration** ::= [InterpolatedIdentifier]¹ ':' (Value | Value? BlockStart Statements BlockEnd )
 </pre></x>
-
-[InterpolatedIdentifier]: ../spec/syntax.md#interpolatedidentifier
 
 1. This may not begin with "--".
 
@@ -203,6 +228,63 @@ This proposal defines replacements for productions that only defined syntax for 
 
 > TODO: Should this be BlockContents instead of Statements?
 
-### Proposed Syntax
+### Proposed Syntax Changes
 
-## Semantics
+For the indented syntax, [StatementEnd] is replaced with:
+
+[StatementEnd]: #indented-format
+
+<x><pre>
+**StatementEnd**           ::= NewLine | ';' | BlockEnd
+</pre></x>
+
+## Procedures
+
+### Parsing text as Sass
+
+This algorithm takes a string, `text`, and a `syntax` ("indented" or "scss") and returns a Sass abstract syntax tree.
+
+* Let `BlockStart`, `BlockEnd`, `StatementEnd`, and `StatementExplicitEnd` be
+  the syntax for `syntax`.
+
+* Let `AST` be an empty tree.
+
+* Let `current-statement` be a new statement.
+
+* While parsing text:
+
+  * If parsing encounters child `Statements`, `BlockStart`, set `parent` to
+    `current-statement`, and parse each child.
+
+  * If parsing produces `StatementMayEnd`:
+  
+    * If the next token is `StatementEnd`, add `current-statement` to `AST`, and resume parsing `parent` if one exists.
+
+    * If the next token is `BlockEnd`, add `current-statement` to `AST`, and `parent` if one exists. If `parent` has a `parent`, continue parsing `parent`'s `parent`.
+
+    > Todo- turn into a subroutine.
+
+    * If you are at the end of `text`, return `AST`.
+
+    * Otherwise, continue.
+
+  * Otherwise, if `StatementExplicitEnd` is read, or if you are at the end of
+    `text`, throw an error.
+
+  * Otherwise, continue.
+
+### Productions of `StatementMayEnd`
+
+A `StatementMayEnd` pseudoproduction is created in the following productions:
+
+* After a SassScript value, unless the SassScript value is inside a [`BracketedListExpression`], [`MapExpression`], [`ArgumentDeclaration`], or [`OrderOfOperationsExpression`].
+
+[`BracketedListExpression`]: ../spec/types/list.md#syntax
+
+* Immediately after any `*ListExpression`, `MapExpression` or [`OrderOfOperationsExpression`].
+
+* Immediately after a `BlockEnd` in any other production.
+
+* After each space or `NewLine` in a [`CustomDeclaration`], except in Interpolations.
+
+[`CustomDeclaration`]: ../spec/declarations.md#syntax
