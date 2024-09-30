@@ -8,12 +8,11 @@ This proposal improves the indented syntax format, allowing multiline expression
 
 * [Background](#background)
 * [Summary](#summary)
+  * [Explicit statement ends](#explicit-statement-ends)
   * [Places where a line break must create a statement break](#places-where-a-line-break-must-create-a-statement-break)
+    * [After a SassScript value](#after-a-sassscript-value)
     * [After a non-enclosed list begins](#after-a-non-enclosed-list-begins)
-      * [Lists in arguments](#lists-in-arguments)
-    * [Custom property values, except inside an InterpolatedDeclarationValue](#custom-property-values-except-inside-an-interpolateddeclarationvalue)
-    * [Binary operators](#binary-operators)
-    * [At Rules](#at-rules)
+    * [At-rules](#at-rules)
   * [Design Decisions](#design-decisions)
 * [Syntax](#syntax)
   * [Existing Syntax](#existing-syntax)
@@ -27,7 +26,7 @@ This proposal improves the indented syntax format, allowing multiline expression
     * [OrderOfOperationsExpression](#orderofoperationsexpression)
     * [MapExpression](#mapexpression)
   * [Clarified Syntax](#clarified-syntax)
-  * [Proposed Syntax Changes](#proposed-syntax-changes)
+  * [Syntax Changes](#syntax-changes)
 * [Procedures](#procedures)
   * [Parsing text as Sass](#parsing-text-as-sass)
   * [Productions of `StatementMayEnd`](#productions-of-statementmayend)
@@ -53,7 +52,32 @@ line break is treated as continuing white space.
 In addition, this proposal adds semicolons to the indented syntax as explicit
 statement ends, and allows curly braces to wrap blocks.
 
+### Explicit statement ends
+
+The `ExplicitStatementEnd`, `;`, will always cause a statement break. If one
+occurs in a context where a statement can not end, an error will be thrown.
+
 ### Places where a line break must create a statement break
+
+By design, line breaks are ignored as meaningless white space, except in
+contexts where the semantics define that a statement may end. When an author
+inserts a line break they intend to be meaningless in a position where a
+statement may end, the statement will end, and parsing will most likely fail on
+the subsequent text. The following places are where line breaks will cause
+statements to end.
+
+#### After a SassScript value
+
+In a simple declaration, `$foo: bar \n`, the line break must cause the statement
+to end.
+
+This may be surprising in more complex situations, for instance, with binary
+operators. `$foo: 3\n+ 4\n` ends the statement after `3`, but `$foo: 3 +\n4\n`
+ends the statement after `4`. Wrapping with the order of operations operator
+`()` allows authors more flexibility with `$foo: (3\n+ 4)`.
+
+This also applies to flow control at-rules. `@if $a \n and $b` would end the
+statement after `$`, but `@if ($a \n and $b)` can be parsed.
 
 #### After a non-enclosed list begins
 
@@ -68,32 +92,25 @@ Comma separated lists can not use a trailing comma to signify that a list will
 continue after the line break, as this would break existing stylesheets with
 trailing commas.
 
-##### Lists in arguments
-
 Because arguments to functions and mixins are already wrapped in `()`, line
-breaks in arguments do not need to cause a statement break.
+breaks in arguments do not need to cause a statement break. Interpolations are
+wrapped in `#{}` so line breaks do not need to end statements.
 
-#### Custom property values, except inside an InterpolatedDeclarationValue
+#### At-rules
 
-Interpolations are wrapped in `#{}` so line breaks do not need to end statements.
-
-#### Binary operators
-
-Line breaks must cause statement breaks before a binary operator, unless it is wrapped in `()`.
-
-`3\n+ 4` doesn't have a clear ending. `(3\n+ 4)` or `3 +\n4` would work.
-
-`@if $a \n and $b` can not be parsed to determine when the statement has ended. `@if ($a \n and $b)` can be parsed.
-
-#### At Rules
-
-For any at rule that is supported by native CSS, line breaks after the `@` and
+For any at-rule that is supported by native CSS, line breaks after the `@` and
 before a block or statement end are not supported. This includes `@include`,
 (which overlaps with Sass), `@supports`, `@media`, `@keyframes` and any unknown at rule.
 
 These rules should be emitted as is, with no special handling from Sass.
 
 ### Design Decisions
+
+While some CSS at-rules may have contexts where a line break would not be
+meaningful, custom handling of line breaks is outside of the scope of this
+proposal. For instance, `@media (hover: hover) and \n (color)` is not supported,
+even though line breaks do not end statements after boolean operators in general
+SassScript.
 
 ## Syntax
 
@@ -228,7 +245,7 @@ This proposal defines replacements for productions that only defined syntax for 
 
 > TODO: Should this be BlockContents instead of Statements?
 
-### Proposed Syntax Changes
+### Syntax Changes
 
 For the indented syntax, [StatementEnd] is replaced with:
 
@@ -247,26 +264,28 @@ This algorithm takes a string, `text`, and a `syntax` ("indented" or "scss") and
 * Let `BlockStart`, `BlockEnd`, `StatementEnd`, and `StatementExplicitEnd` be
   the syntax for `syntax`.
 
-* Let `AST` be an empty tree.
+* Let `AST` be an empty syntax tree.
 
 * Let `current-statement` be a new statement.
 
 * While parsing text:
 
-  * If parsing encounters child `Statements`, `BlockStart`, set `parent` to
+  * If parsing encounters child `Statements`, set `parent` to
     `current-statement`, and parse each child.
 
-  * If parsing produces `StatementMayEnd`:
-  
-    * If the next token is `StatementEnd`, add `current-statement` to `AST`, and resume parsing `parent` if one exists.
+  * If parsing produces [`StatementMayEnd`]:
 
-    * If the next token is `BlockEnd`, add `current-statement` to `AST`, and `parent` if one exists. If `parent` has a `parent`, continue parsing `parent`'s `parent`.
+  [`StatementMayEnd`]: #productions-of-statementmayend
+  
+  * If the next token is `StatementEnd`, add `current-statement` to `AST`, and resume parsing `parent` if one exists.
+
+  * If the next token is `BlockEnd`, add `current-statement` to `AST`, and `parent` if one exists. If `parent` has a `parent`, continue parsing `parent`'s `parent`.
 
     > Todo- turn into a subroutine.
 
-    * If you are at the end of `text`, return `AST`.
+  * If you are at the end of `text`, return `AST`.
 
-    * Otherwise, continue.
+  * Otherwise, continue.
 
   * Otherwise, if `StatementExplicitEnd` is read, or if you are at the end of
     `text`, throw an error.
@@ -285,6 +304,8 @@ A `StatementMayEnd` pseudoproduction is created in the following productions:
 
 * Immediately after a `BlockEnd` in any other production.
 
-* After each space or `NewLine` in a [`CustomDeclaration`], except in Interpolations.
+* After each space or `NewLine` in a [`CustomDeclaration`], except inside an Interpolation production.
 
 [`CustomDeclaration`]: ../spec/declarations.md#syntax
+
+* After each space or `NewLine` in an at-rule supported by CSS, including unknown at-rules, except in interpolations.
