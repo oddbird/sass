@@ -8,8 +8,10 @@
 ## Syntax
 
 <x><pre>
-**FunctionRule** ::= '@function' [\<ident-token>] ArgumentDeclaration '{' Statements '}'
+**FunctionRule** ::= '@function' [\<ident-token>] [ArgumentDeclaration] '{' Statements '}'
 </pre></x>
+
+[ArgumentDeclaration]: ../syntax.md#argumentdeclaration
 
 [\<ident-token>]: https://drafts.csswg.org/css-syntax-3/#ident-token-diagram
 

@@ -21,10 +21,6 @@ This proposal improves the indented syntax format, allowing multiline expression
       * [SCSS format](#scss-format)
     * [Statement](#statement)
     * [Block](#block)
-    * [ArgumentDeclaration](#argumentdeclaration)
-    * [InterpolatedDeclarationValue](#interpolateddeclarationvalue)
-    * [OrderOfOperationsExpression](#orderofoperationsexpression)
-    * [MapExpression](#mapexpression)
   * [Clarified Syntax](#clarified-syntax)
   * [Syntax Changes](#syntax-changes)
 * [Procedures](#procedures)
@@ -155,36 +151,6 @@ and`UnknownAtRule`.
 **Block**          ::= BlockPrelude BlockStart BlockContents BlockEnd
 **BlockContents**  ::= (Statement | Block)+
 </pre></x>
-
-#### ArgumentDeclaration
-
-<x><pre>
-ArgumentDeclaration ::= '(' [CommaListExpression] ')'
-</pre></x>
-
-[CommaListExpression]: ../spec/types/list.md#syntax
-
-Productions for optional or keyword arguments are omitted, as they are orthogonal to this proposal.
-
-#### InterpolatedDeclarationValue
-
-<x><pre>
-InterpolatedDeclarationValue ::= (Interpolation | String)+
-</pre></x>
-
-#### OrderOfOperationsExpression
-
-<x><pre>
-OrderOfOperationsExpression ::= '(' Statements ')'
-</pre></x>
-
-#### MapExpression
-
-<x><pre>
-MapExpression ::= '(' [InterpolatedIdentifier] ':' Value) (',' [InterpolatedIdentifier] ':' Value)* ')'
-</pre></x>
-
-[InterpolatedIdentifier]: ../spec/syntax.md#interpolatedidentifier
 
 ### Clarified Syntax
 

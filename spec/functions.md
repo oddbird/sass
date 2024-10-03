@@ -134,7 +134,7 @@ To evaluate a `FunctionCall` `call`:
   * Return an unquoted string representing a CSS function call with name `name`
     and arguments `list`.
 
-* Execute `call`'s `ArgumentInvocation` with `function`'s `ArgumentDeclaration`
+* Execute `call`'s `ArgumentInvocation` with `function`'s [`ArgumentDeclaration`]
   in `function`'s scope.
 
 * Execute each statement in `function` until a `ReturnRule` `return` that's

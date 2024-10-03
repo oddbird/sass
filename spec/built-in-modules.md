@@ -12,10 +12,11 @@ Each function and mixin defined in a built-in modules is specified with a
 signature of the form
 
 <x><pre>
-[\<ident-token>] ArgumentDeclaration
+[\<ident-token>] [ArgumentDeclaration]
 </pre></x>
 
 [\<ident-token>]: https://drafts.csswg.org/css-syntax-3/#ident-token-diagram
+[ArgumentDeclaration]: ./syntax.md#argumentdeclaration
 
 followed by a procedure. It's available as a member (either function or mixin)
 in the module whose name is the value of the `<ident-token>`. When it's executed
