@@ -21,7 +21,6 @@ This proposal improves the indented syntax format, allowing multiline expression
       * [SCSS format](#scss-format)
     * [Statement](#statement)
     * [Block](#block)
-  * [Clarified Syntax](#clarified-syntax)
   * [Syntax Changes](#syntax-changes)
 * [Procedures](#procedures)
   * [Parsing text as Sass](#parsing-text-as-sass)
@@ -151,65 +150,6 @@ and`UnknownAtRule`.
 **Block**          ::= BlockPrelude BlockStart BlockContents BlockEnd
 **BlockContents**  ::= (Statement | Block)+
 </pre></x>
-
-### Clarified Syntax
-
-This proposal defines replacements for productions that only defined syntax for the SCSS format.
-
-[StandardDeclaration] is replaced.
-
-[StandardDeclaration]: ../spec/declarations.md#syntax
-
-<x><pre>
-**StandardDeclaration** ::= [InterpolatedIdentifier]¹ ':' (Value | Value? BlockStart Statements BlockEnd )
-</pre></x>
-
-1. This may not begin with "--".
-
-[UnknownAtRule] is replaced.
-
-[UnknownAtRule]: ../spec/at-rules/unknown.md#syntax
-
-<x><pre>
-**UnknownAtRule** ::= '@' [InterpolatedIdentifier] InterpolatedValue?
-&#32;                   (BlockStart Statements BlockEnd)?
-</pre></x>
-
-[MixinRule] is replaced.
-
-[MixinRule]: ../spec/at-rules/mixin.md#syntax
-
-<x><pre>
-**MixinRule** ::= '@mixin' [\<ident-token>] ArgumentDeclaration? BlockStart Statements BlockEnd
-</pre></x>
-
-[ContentBlock] is replaced.
-
-[ContentBlock]: ../spec/at-rules/mixin.md#syntax-1
-
-<x><pre>
-**ContentBlock**     ::= UsingDeclaration? BlockStart Statements BlockEnd
-</pre></x>
-
-[FunctionRule] is replaced.
-
-[FunctionRule]: ../spec/at-rules/function.md#syntax
-
-<x><pre>
-**FunctionRule** ::= '@function' [\<ident-token>] ArgumentDeclaration BlockStart Statements BlockEnd
-</pre></x>
-
-[\<ident-token>]: https://drafts.csswg.org/css-syntax-3/#ident-token-diagram
-
-[ForBlock] is replaced.
-
-[ForBlock]: ../spec/at-rules/for.md#syntax
-
-<x><pre>
-**ForBlock**           ::= BlockStart Statements BlockEnd
-</pre></x>
-
-> TODO: Should this be BlockContents instead of Statements?
 
 ### Syntax Changes
 

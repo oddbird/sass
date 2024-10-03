@@ -8,7 +8,7 @@
 
 <x><pre>
 **UnknownAtRule** ::= '@' [InterpolatedIdentifier] InterpolatedValue?
-&#32;                   ('{' Statements '}')?
+&#32;                   (BlockStart Statements BlockEnd)?
 </pre></x>
 
 [InterpolatedIdentifier]: ../syntax.md#interpolatedidentifier

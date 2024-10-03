@@ -17,7 +17,7 @@
 ### Syntax
 
 <x><pre>
-**MixinRule** ::= '@mixin' [\<ident-token>] [ArgumentDeclaration]? '{' Statements '}'
+**MixinRule** ::= '@mixin' [\<ident-token>] [ArgumentDeclaration]? BlockStart Statements BlockEnd
 </pre></x>
 
 [\<ident-token>]: https://drafts.csswg.org/css-syntax-3/#ident-token-diagram
@@ -76,7 +76,7 @@ To execute a `@mixin` rule `rule`:
 <x><pre>
 **IncludeRule**      ::= '@include' [NamespacedIdentifier] ArgumentInvocation?
 &#32;                    ContentBlock?
-**ContentBlock**     ::= UsingDeclaration? '{' Statements '}'
+**ContentBlock**     ::= UsingDeclaration? BlockStart Statements BlockEnd
 **UsingDeclaration** ::= 'using' ArgumentDeclaration
 </pre></x>
 

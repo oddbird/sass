@@ -11,7 +11,7 @@
 
 <x><pre>
 **Declaration**              ::= StandardDeclaration | CustomDeclaration
-**StandardDeclaration**      ::= [InterpolatedIdentifier]¹ ':' (Value | Value? '{' Statements '}')
+**StandardDeclaration**      ::= [InterpolatedIdentifier]¹ ':' (Value | Value? BlockStart Statements BlockEnd )
 **CustomDeclaration**        ::= [InterpolatedIdentifier]² ':' InterpolatedDeclarationValue
 InterpolatedDeclarationValue ::= (Interpolation | String)+
 </pre></x>
