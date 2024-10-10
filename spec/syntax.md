@@ -15,6 +15,7 @@
   * [`ArgumentDeclaration`](#argumentdeclaration)
 * [Procedures](#procedures)
   * [Parsing Text](#parsing-text)
+  * [Parsing Text as the indented syntax](#parsing-text-as-the-indented-syntax)
   * [Parsing Text as CSS](#parsing-text-as-css)
   * [Consuming an Identifier](#consuming-an-identifier)
   * [Consuming an Interpolated Identifier](#consuming-an-interpolated-identifier)
@@ -160,16 +161,22 @@ ArgumentDeclaration ::= '(' [CommaListExpression] ')'
 
 ### Parsing Text
 
-This algorithm takes a string `text` and a syntax `syntax` ("indented", "scss",
-or "sass"), and returns a Sass abstract syntax tree.
+This algorithm takes a string `text` and a syntax `syntax` ("indented", "css",
+or "scss"), and returns a Sass abstract syntax tree.
 
-* If `syntax` is "indented", return the result of parsing `text` as the indented
-  syntax.
+* If `syntax` is "indented", return the result of [parsing `text` as the indented
+  syntax](./statements.md#parsing-text-as-indented-syntax).
 
 * If `syntax` is "css", return the result of [parsing `text` as
   CSS](#parsing-text-as-css).
 
 * If `syntax` is "scss", return the result of parsing `text` as SCSS.
+
+### Parsing Text as the indented syntax
+
+This algorithm takes a string `text` and returns a Sass abstract syntax tree.
+
+* Return
 
 ### Parsing Text as CSS
 

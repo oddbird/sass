@@ -107,6 +107,14 @@ proposal. For instance, `@media (hover: hover) and \n (color)` is not supported,
 even though line breaks do not end statements after boolean operators in general
 SassScript.
 
+We considered borrowing alternate syntax from other languages, such as a leading
+`>` or `|` from YAML or a trailing `|` from HAML. These introduce syntax that is
+novel to Sass, and we instead opted to borrow syntax from the Scss format.
+
+These changes also allow authors using the indented syntax to add more explicit
+blocks and line breaks. While this introduces the changes for all authors,
+authors will still be able choose to limit the syntax with linters.
+
 ## Syntax
 
 The syntax impacted by these changes has not been specified, so this proposal first defines the existing syntax, and then the proposed changes.
