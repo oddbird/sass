@@ -10,6 +10,12 @@
   * [Consuming a declaration value](#consuming-a-declaration-value)
   * [Consuming a StatementSequence in the `scss` format](#consuming-a-statementsequence-in-the-scss-format)
   * [Consuming a StatementSequence in the `indented` format](#consuming-a-statementsequence-in-the-indented-format)
+  * [Consuming a Statement in the Scss syntax](#consuming-a-statement-in-the-scss-syntax)
+  * [Consuming a StatementWithoutBlock in the Scss syntax](#consuming-a-statementwithoutblock-in-the-scss-syntax)
+  * [Consuming a StatementWithBlock in the Scss syntax](#consuming-a-statementwithblock-in-the-scss-syntax)
+  * [Consuming a Statement in the Indented syntax](#consuming-a-statement-in-the-indented-syntax)
+  * [Consuming a StatementWithoutBlock in the Indented syntax](#consuming-a-statementwithoutblock-in-the-indented-syntax)
+  * [Consuming a StatementWithBlock in the Indented syntax](#consuming-a-statementwithblock-in-the-indented-syntax)
 
 ## Syntax
 
@@ -262,3 +268,104 @@ This algorithm consumes input from a stream of [code points] and returns a State
   > TODO- Indentation tracking
 
 * Return `statements`.
+
+### Consuming a Statement in the Scss syntax
+
+This algorithm consumes input from a stream of [code points] in the Scss syntax
+and returns a Statement.
+
+Return the result of [Consuming a StatementWithoutBlock] or [Consuming a StatementWithBlock] according to its specific definition.
+
+[Consuming a StatementWithoutBlock]: #consuming-a-statementwithoutblock-in-the-scss-syntax
+[Consuming a StatementWithBlock]: #consuming-a-statementwithblock-in-the-scss-syntax
+
+### Consuming a StatementWithoutBlock in the Scss syntax
+
+This algorithm consumes input from a stream of [code points] in the Scss syntax
+and returns a StatementWithoutBlock.
+
+* Let `statement` be an empty buffer.
+
+* While there is input:
+
+  * If the next code point is a `;` or `}`, return `statement`.
+
+  * Otherwise, add the next code point to `statement`.
+
+* Return `statement`.
+
+### Consuming a StatementWithBlock in the Scss syntax
+
+This algorithm consumes input from a stream of [code points] in the Scss syntax
+and returns a StatementWithBlock.
+
+* Let `brackets` be an empty array.
+
+* Let `prelude` be the result be the result of consuming input until a `{` that is not preceded by a `#` is consumed.
+
+* Let `children` be an empty array.
+
+* While there is input:
+
+  * If the next code point is whitespace, consume it.
+
+  * If the next code point is `}`, return a StatementWithBlock with `prelude` and `children`.
+
+  * Otherwise, consume a Statement and append it to `children`.
+
+* Return a StatementWithBlock with `prelude` and `children`.
+
+### Consuming a Statement in the Indented syntax
+
+This algorithm consumes input from a stream of [code points] in the Indented syntax
+and returns a Statement.
+
+Return the result of [Consuming a StatementWithoutBlock] or [Consuming a StatementWithBlock] according to its specific definition.
+
+### Consuming a StatementWithoutBlock in the Indented syntax
+
+This algorithm consumes input from a stream of [code points] in the Indented syntax
+and returns a StatementWithoutBlock.
+
+* Let `statement` be an empty buffer.
+
+* While there is input:
+
+  * If the next code point is a new line, return `statement`.
+
+  * Otherwise, add the next code point to `statement`.
+
+* Return `statement`.
+
+### Consuming a StatementWithBlock in the Indented syntax
+
+This algorithm consumes input from a stream of [code points] in the Indented syntax
+and returns a StatementWithBlock.
+
+It takes an integer `indentationLevel` that defaults to 0.
+
+* Let `prelude` be the result of consuming input until a new line code point is consumed.
+
+* Let `children` be an empty array.
+
+* Let `tabCount` and `spaceCount` be 0.
+
+* While there is input:
+
+  * If the next code point is a new line, consume it and continue.
+
+  * If the next code point is a tab, consume it, increment `tabCount` by 1, and
+    continue.
+
+  * If the next code point is a space, consume it, increment `spaceCount` by
+    1, and continue.
+
+  * If `spaceCount` and `tabCount` are both greater than 0, throw an error.
+
+  * Let `newIndentationLevel` be the greater value of `spaceCount` and `tabCount`.
+
+  * If `newIndentationLevel` is less than or equal to `indentationLevel`, return a StatementWithBlock with `prelude` and `children`.
+
+  * Otherwise, consume a Statement and append it to `children`.
+
+* Return a StatementWithBlock with `prelude` and `children`.
