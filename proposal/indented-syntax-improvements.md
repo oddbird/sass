@@ -19,8 +19,6 @@ This proposal improves the indented syntax format, allowing multiline expression
     * [Syntax-specific productions](#syntax-specific-productions)
       * [Indented format](#indented-format)
       * [SCSS format](#scss-format)
-    * [Statement](#statement)
-    * [Block](#block)
   * [Syntax Changes](#syntax-changes)
 * [Procedures](#procedures)
   * [Parsing text as Sass](#parsing-text-as-sass)
@@ -139,24 +137,6 @@ The syntax impacted by these changes has not been specified, so this proposal fi
 **StatementEnd**           ::= ExplicitStatementEnd | BlockEnd
 **BlockStart**             ::= '{'
 **BlockEnd**               ::= '}'
-</pre></x>
-
-#### Statement
-
-<x><pre>
-**Statements**     ::= Statement+
-**Statement**      ::= Value StatementEnd
-</pre></x>
-
-#### Block
-
-`*Rule` is any nonterminal rule, including `MixinRule`, `UseRule`,
-and`UnknownAtRule`.
-
-<x><pre>
-**BlockPrelude**   ::= Selector | *Rule
-**Block**          ::= BlockPrelude BlockStart BlockContents BlockEnd
-**BlockContents**  ::= (Statement | Block)+
 </pre></x>
 
 ### Syntax Changes

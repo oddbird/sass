@@ -17,8 +17,6 @@
   * [Consuming a Statement](#consuming-a-statement)
   * [Consuming a Variable Declaration, Declaration, or StyleRule](#consuming-a-variable-declaration-declaration-or-stylerule)
   * [Consuming a declaration value](#consuming-a-declaration-value)
-  * [Consuming a StatementSequence in the `scss` format](#consuming-a-statementsequence-in-the-scss-format)
-  * [Consuming a StatementSequence in the `indented` format](#consuming-a-statementsequence-in-the-indented-format)
 
 ## Syntax
 
@@ -358,59 +356,3 @@ declaration value. It takes a `syntax` of `indented` or `scss`.
   * Otherwise, consume the next code point and add it to `buffer`.
 
 * Return an interpolation of `buffer`.
-
-### Consuming a StatementSequence in the `scss` format
-
-This algorithm consumes input from a stream of [code points] and returns a StatementSequence.
-
-* Let `statements` be an empty array.
-
-* Consume any preceding whitespace.
-
-* While input is not empty:
-
-  * If input starts with `$`, consume a Variable Declaration Without
-    NameSpace.
-
-  * Otherwise, if input starts with `//`, consume a Silent Comment and add it
-    to `statements`. Consume any whitespace.
-
-  * Otherwise, if input starts with `/*`, consume a Loud Comment and add it to
-    `statements`. Consume any whitespace.
-
-  * Otherwise, if input starts with `/`, consume a Statement if one exists and
-    add it to `statements`.
-
-  * Otherwise, if input starts with `;`, consume it and any following white
-    space.
-
-  * Otherwise, add the result of [Consuming a Statement] with a syntax of `scss` to `statements`.
-
-* Return `statements`.
-
-### Consuming a StatementSequence in the `indented` format
-
-This algorithm consumes input from a stream of [code points] and returns a StatementSequence.
-
-* If input starts with a tab or space, throw an error.
-
-* Let `statements` be an empty array.
-
-* While input is not empty:
-
-  * If input starts with an empty line, consume it.
-
-  * Otherwise, if input starts with `$`, consume a Variable Declaration Without
-    Namesspace and add it to `statements`.
-
-  * Otherwise, if input starts with `//`, consume a Silent Comment and add it
-    to `statements`.
-
-  * Otherwise, if input starts with `/*`, consume a Loud Comment and add it to
-    `statements`.
-
-  * Otherwise, add the result of [Consuming a Statement] with a syntax of `indented` to `statements`.
-
-  > TODO- Indentation tracking
-
-* Return `statements`.
