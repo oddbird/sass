@@ -30,7 +30,27 @@ StatementWithoutBlock)+ </pre></x>
 
 ## Procedures
 
-### Consuming a Statement in the Scss syntax
+### Consuming a StatementSequence in the `scss` format
+
+This algorithm consumes input from a stream of [code points] and returns a StatementSequence. It takes a boolean `inBlock` which defaults to `false`.
+
+* Let `statements` be an empty array.
+
+* Consume any preceding whitespace.
+
+* While input is not empty:
+
+  * Add the result of [Consuming a Statement in the `scss` syntax] to `statements`.
+
+  * Consume any whitespace.
+
+  * If `inBlock` is true and the next code point is `}`, return `statements`.
+
+* If `inBlock` is true, throw an error.
+
+* Return `statements`.
+
+### Consuming a Statement in the `scss` syntax
 
 This algorithm consumes input from a stream of [code points] in the Scss syntax
 and returns a Statement.
@@ -40,7 +60,7 @@ Return the result of [Consuming a StatementWithoutBlock] or [Consuming a Stateme
 [Consuming a StatementWithoutBlock]: #consuming-a-statementwithoutblock-in-the-scss-syntax
 [Consuming a StatementWithBlock]: #consuming-a-statementwithblock-in-the-scss-syntax
 
-### Consuming a StatementWithoutBlock in the Scss syntax
+### Consuming a StatementWithoutBlock in the `scss` syntax
 
 This algorithm consumes input from a stream of [code points] in the Scss syntax
 and returns a StatementWithoutBlock.
@@ -49,34 +69,26 @@ and returns a StatementWithoutBlock.
 
 * While there is input:
 
-  * If the next code point is a `;`, consume it and return `statement`.
+  * If the next code point is whitespace, consume it.
   
-  * If the next code point is a `}`, return `statement`.
+  * If the next code point is `;`, consume it and return `statement`.
+  
+  * If the next code point is `}`, return `statement`.
 
   * Otherwise, add the next code point to `statement`.
 
 * Return `statement`.
 
-### Consuming a StatementWithBlock in the Scss syntax
+### Consuming a StatementWithBlock in the `scss` syntax
 
 This algorithm consumes input from a stream of [code points] in the Scss syntax
 and returns a StatementWithBlock.
 
-* Let `brackets` be an empty array.
-
 * Let `prelude` be the result be the result of consuming input until a `{` that is not preceded by a `#` is consumed.
 
-* Let `children` be an empty array.
+* Let `children` be the result of [Consuming a StatementSequence in the `scss` format] with `inBlock` set to true.
 
-* While there is input:
-
-  * If the next code point is whitespace, consume it.
-
-  * If the next code point is `}`, return a StatementWithBlock with `prelude` and `children`.
-
-  * Otherwise, consume a Statement and append it to `children`.
-
-* If the end of input is reached without closing the block, throw an error.
+* Return a StatementWithBlock with `prelude` and `children`.
 
 ### Consuming a Statement in the Indented syntax
 
