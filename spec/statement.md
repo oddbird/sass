@@ -5,7 +5,7 @@
 * [Syntax](#syntax)
   * [StatementSequence](#statementsequence)
 * [Procedures](#procedures)
-  * [Consuming a Statement Sequence in the `scss` format](#consuming-a-statement-sequence-in-the-scss-format)
+  * [Consuming a Statement Sequence in the `scss` syntax](#consuming-a-statement-sequence-in-the-scss-syntax)
   * [Consuming a Statement in the `scss` syntax](#consuming-a-statement-in-the-scss-syntax)
   * [Consuming a Statement Without Block in the `scss` syntax](#consuming-a-statement-without-block-in-the-scss-syntax)
   * [Consuming a Statement With Block in the `scss` syntax](#consuming-a-statement-with-block-in-the-scss-syntax)
@@ -32,9 +32,10 @@ StatementWithoutBlock)+ </pre></x>
 
 ## Procedures
 
-### Consuming a Statement Sequence in the `scss` format
+### Consuming a Statement Sequence in the `scss` syntax
 
-This algorithm consumes input from a stream of [code points] and returns a StatementSequence. It takes a boolean `inBlock` which defaults to `false`.
+This algorithm consumes input from a stream of [code points] and returns a
+Statement Sequence. It takes a boolean `inBlock` which defaults to `false`.
 
 [code points]: https://infra.spec.whatwg.org/#code-point
 
@@ -46,7 +47,7 @@ This algorithm consumes input from a stream of [code points] and returns a State
 
   * Add the result of [Consuming a Statement in the `scss` syntax] to `statements`.
 
-  [Consuming a Statement Sequence in the `scss` format]: #consuming-a-statement-sequence-in-the-scss-format
+  [Consuming a Statement Sequence in the `scss` syntax]: #consuming-a-statement-sequence-in-the-scss-syntax
 
   * Consume any whitespace.
 
@@ -92,7 +93,7 @@ and returns a Statement With Block.
 
 * Let `prelude` be the result be the result of consuming input until a `{` that is not preceded by a `#` is consumed.
 
-* Let `children` be the result of [Consuming a Statement Sequence in the `scss` format] with `inBlock` set to true.
+* Let `children` be the result of [Consuming a Statement Sequence in the `scss` syntax] with `inBlock` set to true.
 
 * Return a StatementWithBlock with `prelude` and `children`.
 
@@ -162,6 +163,8 @@ and returns a Statement With Block. It takes an integer `indentationLevel`.
 * Let `prelude` be the result of consuming input until a new line code point is consumed.
 
 * Let `children` be the result of [Consuming a Statement Sequence in the `indented` syntax] with `indentationLevel` of `indentationLevel + 1`.
+
+[Consuming a Statement Sequence in the `indented` syntax]: #consuming-a-statement-sequence-in-the-indented-syntax
 
 * Return a Statement With Block with `prelude` and `children`.
 
