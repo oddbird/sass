@@ -5,19 +5,19 @@
 * [Syntax](#syntax)
   * [StatementSequence](#statementsequence)
 * [Procedures](#procedures)
-  * [Consuming a StatementSequence in the `scss` format](#consuming-a-statementsequence-in-the-scss-format)
+  * [Consuming a Statement Sequence in the `scss` format](#consuming-a-statement-sequence-in-the-scss-format)
   * [Consuming a Statement in the `scss` syntax](#consuming-a-statement-in-the-scss-syntax)
-  * [Consuming a StatementWithoutBlock in the `scss` syntax](#consuming-a-statementwithoutblock-in-the-scss-syntax)
-  * [Consuming a StatementWithBlock in the `scss` syntax](#consuming-a-statementwithblock-in-the-scss-syntax)
-  * [Consuming a StatementSequence in the `indented` syntax](#consuming-a-statementsequence-in-the-indented-syntax)
+  * [Consuming a Statement Without Block in the `scss` syntax](#consuming-a-statement-without-block-in-the-scss-syntax)
+  * [Consuming a Statement With Block in the `scss` syntax](#consuming-a-statement-with-block-in-the-scss-syntax)
+  * [Consuming a Statement Sequence in the `indented` syntax](#consuming-a-statement-sequence-in-the-indented-syntax)
   * [Consuming a Statement in the `indented` syntax](#consuming-a-statement-in-the-indented-syntax)
-  * [Consuming a StatementWithoutBlock in the `indented` syntax](#consuming-a-statementwithoutblock-in-the-indented-syntax)
-  * [Consuming a StatementWithBlock in the `indented` syntax](#consuming-a-statementwithblock-in-the-indented-syntax)
+  * [Consuming a Statement Without Block in the `indented` syntax](#consuming-a-statement-without-block-in-the-indented-syntax)
+  * [Consuming a Statement With Block in the `indented` syntax](#consuming-a-statement-with-block-in-the-indented-syntax)
 * [Spec extracted from code](#spec-extracted-from-code)
   * [Consuming a Statement](#consuming-a-statement)
   * [Consuming a Variable Declaration, Declaration, or StyleRule](#consuming-a-variable-declaration-declaration-or-stylerule)
   * [Consuming a declaration value](#consuming-a-declaration-value)
-  * [Consuming a StatementSequence in the `scss` format](#consuming-a-statementsequence-in-the-scss-format-1)
+  * [Consuming a StatementSequence in the `scss` format](#consuming-a-statementsequence-in-the-scss-format)
   * [Consuming a StatementSequence in the `indented` format](#consuming-a-statementsequence-in-the-indented-format)
 
 ## Syntax
@@ -32,9 +32,11 @@ StatementWithoutBlock)+ </pre></x>
 
 ## Procedures
 
-### Consuming a StatementSequence in the `scss` format
+### Consuming a Statement Sequence in the `scss` format
 
 This algorithm consumes input from a stream of [code points] and returns a StatementSequence. It takes a boolean `inBlock` which defaults to `false`.
+
+[code points]: https://infra.spec.whatwg.org/#code-point
 
 * Let `statements` be an empty array.
 
@@ -43,6 +45,8 @@ This algorithm consumes input from a stream of [code points] and returns a State
 * While input is not empty:
 
   * Add the result of [Consuming a Statement in the `scss` syntax] to `statements`.
+
+  [Consuming a Statement Sequence in the `scss` format]: #consuming-a-statement-sequence-in-the-scss-format
 
   * Consume any whitespace.
 
@@ -57,15 +61,15 @@ This algorithm consumes input from a stream of [code points] and returns a State
 This algorithm consumes input from a stream of [code points] in the Scss syntax
 and returns a Statement.
 
-Return the result of [Consuming a StatementWithoutBlock] or [Consuming a StatementWithBlock] according to the Statement's specific definition.
+Return the result of [Consuming a Statement Without Block] or [Consuming a Statement With Block] according to the Statement's specific definition.
 
-[Consuming a StatementWithoutBlock]: #consuming-a-statementwithoutblock-in-the-scss-syntax
-[Consuming a StatementWithBlock]: #consuming-a-statementwithblock-in-the-scss-syntax
+[Consuming a Statement Without Block]: #consuming-a-statement-without-block-in-the-scss-syntax
+[Consuming a Statement With Block]: #consuming-a-statement-with-block-in-the-scss-syntax
 
-### Consuming a StatementWithoutBlock in the `scss` syntax
+### Consuming a Statement Without Block in the `scss` syntax
 
 This algorithm consumes input from a stream of [code points] in the Scss syntax
-and returns a StatementWithoutBlock.
+and returns a Statement Without Block.
 
 * Let `statement` be an empty buffer.
 
@@ -81,20 +85,20 @@ and returns a StatementWithoutBlock.
 
 * Return `statement`.
 
-### Consuming a StatementWithBlock in the `scss` syntax
+### Consuming a Statement With Block in the `scss` syntax
 
 This algorithm consumes input from a stream of [code points] in the Scss syntax
-and returns a StatementWithBlock.
+and returns a Statement With Block.
 
 * Let `prelude` be the result be the result of consuming input until a `{` that is not preceded by a `#` is consumed.
 
-* Let `children` be the result of [Consuming a StatementSequence in the `scss` format] with `inBlock` set to true.
+* Let `children` be the result of [Consuming a Statement Sequence in the `scss` format] with `inBlock` set to true.
 
 * Return a StatementWithBlock with `prelude` and `children`.
 
-### Consuming a StatementSequence in the `indented` syntax
+### Consuming a Statement Sequence in the `indented` syntax
 
-This algorithm consumes input from a stream of [code points] and returns a StatementSequence. It takes an `indentationLevel` integer that defaults to `0`.
+This algorithm consumes input from a stream of [code points] and returns a Statement Sequence. It takes an `indentationLevel` integer that defaults to `0`.
 
 * If `indentationLevel` is `0` and input starts with a tab or space, throw an error.
 
@@ -119,21 +123,26 @@ This algorithm consumes input from a stream of [code points] and returns a State
 
   * Otherwise, add the result of [Consuming a Statement in the `indented` syntax] to `statements` with an `indentationLevel` of `indentationLevel`.
 
+  [Consuming a Statement in the `indented` syntax]: #consuming-a-statement-sequence-in-the-indented-syntax
+
 * Return `statements`.
 
 ### Consuming a Statement in the `indented` syntax
 
-This algorithm consumes input from a stream of [code points] in the Indented syntax
+This algorithm consumes input from a stream of [code points] in the indented syntax
 and returns a Statement. It takes an integer `indentationLevel` that defaults to 0.
 
-Return the result of [Consuming a StatementWithoutBlock] or [Consuming a
-StatementWithBlock] with `indentationLevel` according to the Statement's
-specific definition.
+Return the result of [Consuming a Statement Without Block in the `indented`
+syntax] or [Consuming a Statement With Block in the `indented` syntax] with
+`indentationLevel` according to the Statement's specific definition.
 
-### Consuming a StatementWithoutBlock in the `indented` syntax
+[Consuming a Statement Without Block in the `indented` syntax]: #consuming-a-statement-without-block-in-the-indented-syntax
+[Consuming a Statement With Block in the `indented` syntax]: #consuming-a-statement-with-block-in-the-indented-syntax
+
+### Consuming a Statement Without Block in the `indented` syntax
 
 This algorithm consumes input from a stream of [code points] in the indented syntax
-and returns a StatementWithoutBlock.
+and returns a Statement Without Block.
 
 * Let `statement` be an empty buffer.
 
@@ -145,16 +154,16 @@ and returns a StatementWithoutBlock.
 
 * Return `statement`.
 
-### Consuming a StatementWithBlock in the `indented` syntax
+### Consuming a Statement With Block in the `indented` syntax
 
 This algorithm consumes input from a stream of [code points] in the indented syntax
-and returns a StatementWithBlock. It takes an integer `indentationLevel`.
+and returns a Statement With Block. It takes an integer `indentationLevel`.
 
 * Let `prelude` be the result of consuming input until a new line code point is consumed.
 
-* Let `children` be the result of [Consuming a StatementSequence in the `indented` syntax] with `indentationLevel` of `indentationLevel + 1`.
+* Let `children` be the result of [Consuming a Statement Sequence in the `indented` syntax] with `indentationLevel` of `indentationLevel + 1`.
 
-* Return a StatementWithBlock with `prelude` and `children`.
+* Return a Statement With Block with `prelude` and `children`.
 
 ## Spec extracted from code
 
@@ -196,7 +205,7 @@ This algorithm consumes input from a stream of [code points] and returns a Varia
 
 * If `syntax` is `indented` and the input starts with `\`, return the result of [Consuming a Style Rule].
 
-[Consuming a Style Rule]: ./style-rules.md#consuming-style-rule
+[Consuming a Style Rule]: ./style-rules.md#consuming-a-style-rule
 
 * Let `buffer` be an empty buffer.
 

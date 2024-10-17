@@ -164,8 +164,8 @@ ArgumentDeclaration ::= '(' [CommaListExpression] ')'
 This algorithm takes a string `text` and a syntax `syntax` ("indented", "css",
 or "scss"), and returns a Sass abstract syntax tree.
 
-* If `syntax` is "indented", return the result of [parsing `text` as the indented
-  syntax](./statements.md#parsing-text-as-indented-syntax).
+* If `syntax` is "indented", return the result of parsing `text` as the indented
+  syntax.
 
 * If `syntax` is "css", return the result of [parsing `text` as
   CSS](#parsing-text-as-css).
