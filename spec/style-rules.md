@@ -103,9 +103,9 @@ This algorithm consumes `input` from a stream of [code points] and returns a sin
 
 [consuming a style rule selector]: #consuming-a-style-rule-selector
 
-* Let `children` be the result of [consuming a StatementSequence] with `syntax`.
+* Let `children` be the result of [consuming Statements] with `syntax`.
 
-[consuming a StatementSequence]: statement.md#procedures
+[consuming Statements]: statement.md#statements
 
 * Return a style rule with a selector of `selector` and children `children`.
 
