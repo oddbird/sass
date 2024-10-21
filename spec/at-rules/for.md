@@ -13,7 +13,7 @@
 **FromDeclaration**    ::= 'from' Expression
 **ToDeclaration**      ::= 'to' Expression
 **ThroughDeclaration** ::= 'through' Expression
-**ForBlock**           ::= BlockStart Statements BlockEnd
+**ForBlock**           ::= Block
 </pre></x>
 
 [PlainVariable]: ../variables.md#syntax

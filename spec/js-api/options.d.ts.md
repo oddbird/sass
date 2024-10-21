@@ -152,7 +152,7 @@ Before beginning compilation:
 * For each key/value pair `signature`/`function` in this record:
 
   * If `signature` isn't an [<ident-token>] followed immediately by an
-    [`ArgumentDeclaration`], throw an error.
+    `ArgumentDeclaration`, throw an error.
 
   * Let `name` be `signature`'s <ident-token>.
 

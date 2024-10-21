@@ -8,7 +8,7 @@
 ## Syntax
 
 <x><pre>
-**FunctionRule** ::= '@function' [\<ident-token>] [ArgumentDeclaration] BlockStart Statements BlockEnd
+**FunctionRule** ::= '@function' [\<ident-token>] [ArgumentDeclaration] Block
 </pre></x>
 
 [ArgumentDeclaration]: ../syntax.md#argumentdeclaration
