@@ -6,6 +6,8 @@
   * [Current indentation level](#current-indentation-level)
   * [Document indentation character](#document-indentation-character)
 * [Syntax](#syntax)
+  * [ScssStatements](#scssstatements)
+  * [IndentedStatements](#indentedstatements)
   * [Statements](#statements)
   * [Block](#block)
   * [Whitespace](#whitespace)
@@ -32,36 +34,60 @@ In the indented syntax, a document may not begin with whitespace, and no charact
 
 ## Syntax
 
-### Statements
+### ScssStatements
 
 <x><pre>
 **ScssStatements**      ::= (Statement ';'?¹)*Statement?
+</pre></x>
+
+1: This production is mandatory unless the previous `Statement` is a `LoudComment` or `SilentComment`, or is the final production in a `Block`.
+
+> TODO: Is end of file covered by final production in block?
+
+If a `WhitespaceComment` would be ambiguous with a `Statement` in the `ScssStarements` rule, parse it preferentially as a `Statement`.
+
+[`LineBreak`]: #whitespace
+
+### IndentedStatements
+
+<x><pre>
 **IndentedStatements**  ::= (Statement IndentedSame?¹)* Statement?
-**Statements**          ::= ScssStatements | IndentedStatements²
 </pre></x>
 
 1: This production is mandatory unless the previous `Statement` is a `LoudComment` or `SilentComment`, or its final production is a `Block`.
 
-2: Only the production for the current syntax is valid.
+If a `WhitespaceComment` would be ambiguous with a `Statement` in the `IndentedStatements` rule, parse it preferentially as a [`LineBreak`].
 
-If a `WhitespaceComment` would be ambiguous with a `Statement` in this rule, parse it preferentially as a `Statement`.
+### Statements
+
+<x><pre>
+**Statements**          ::= [ScssStatements] | [IndentedStatements]¹
+</pre></x>
+
+[ScssStatements]: #scssstatements
+[IndentedStatements]: #indentedstatements
+
+Only the production for the current syntax is valid.
 
 ### Block
 
 <x><pre>
-**ScssBlock**      ::= '{' ScssStatements '}'
-**IndentedBlock**  ::= IndentMore IndentedStatements IndentLess
+**ScssBlock**      ::= '{' [ScssStatements] '}'
+**IndentedBlock**  ::= [IndentMore] [IndentedStatements] [IndentLess]
 **Block**          ::= ScssBlock | IndentedBlock¹
 </pre></x>
+
+[IndentMore]: #indentation
+[IndentLess]: #indentation
 
 1: Only the production for the current syntax is valid.
 
 ### Whitespace
 
 <x><pre>
-**LineBreaks**          ::= CarriageReturn | LineFeed | FormFeed
+**LineBreak**           ::= CarriageReturn | LineFeed | FormFeed
 **IndentCharacter**     ::= Space | Tab
-**Whitespace**          ::= LineBreaks | Indentation
+**Whitespace**          ::= LineBreak | Indentation
 </pre></x>
 
 > TODO >  make it clear that newlines (and comments that contain newlines) don't currently count as whitespace for the indented syntax.
