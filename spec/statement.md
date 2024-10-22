@@ -51,8 +51,6 @@ of the document.
 If a `WhitespaceComment` would be ambiguous with a `Statement` in the
 `ScssStatements` rule, parse it preferentially as a `Statement`.
 
-[`LineBreak`]: #whitespace
-
 ### IndentedStatements
 
 <x><pre>
@@ -64,7 +62,9 @@ If a `WhitespaceComment` would be ambiguous with a `Statement` in the
 `IndentedStatements` production, which is either at the end of a `Block` or the
 end of the document.
 
-If a `WhitespaceComment` would be ambiguous with a `Statement` in the `IndentedStatements` rule, parse it preferentially as a [`LineBreak`].
+If a `WhitespaceComment` would be ambiguous with a `Statement` in the `IndentedStatements` rule, parse it preferentially as a `Statement`.
+
+> TODO: Should it be IndentedSame | IndentedLess
 
 ### Statements
 

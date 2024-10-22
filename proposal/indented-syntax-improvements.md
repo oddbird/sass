@@ -15,14 +15,9 @@ This proposal improves the indented syntax format, allowing multiline expression
     * [At-rules](#at-rules)
   * [Design Decisions](#design-decisions)
 * [Syntax](#syntax)
-  * [Existing Syntax](#existing-syntax)
-    * [Syntax-specific productions](#syntax-specific-productions)
-      * [Indented format](#indented-format)
-      * [SCSS format](#scss-format)
-  * [Syntax Changes](#syntax-changes)
-* [Procedures](#procedures)
-  * [Parsing text as Sass](#parsing-text-as-sass)
-  * [Productions of `StatementMayEnd`](#productions-of-statementmayend)
+  * [IndentedStatements](#indentedstatements)
+  * [Block](#block)
+  * [Whitespace](#whitespace)
 
 ## Background
 
@@ -70,7 +65,7 @@ ends the statement after `4`. Wrapping with the order of operations operator
 `()` allows authors more flexibility with `$foo: (3\n+ 4)`.
 
 This also applies to flow control at-rules. `@if $a \n and $b` would end the
-statement after `$`, but `@if ($a \n and $b)` can be parsed.
+statement after `$a`, but `@if ($a \n and $b)` can be parsed.
 
 #### After a non-enclosed list begins
 
@@ -115,91 +110,37 @@ authors will still be able choose to limit the syntax with linters.
 
 ## Syntax
 
-The syntax impacted by these changes has not been specified, so this proposal first defines the existing syntax, and then the proposed changes.
-
-### Existing Syntax
-
-#### Syntax-specific productions
-
-##### Indented format
+### IndentedStatements
 
 <x><pre>
-**NewLine**        ::= LineFeed | CarriageReturn | FormFeed
-**StatementEnd**   ::= NewLine
-**BlockStart**     ::= Indent
-**BlockEnd**       ::= Dedent
+**IndentedStatements**  ::= (Statement (';' | IndentedSame)?¹)* Statement?
 </pre></x>
 
-##### SCSS format
+1: This production is mandatory unless the previous `Statement` is a
+`LoudComment` or `SilentComment`, or after the final production in a
+`IndentedStatements` production, which is either at the end of a `Block` or the
+end of the document.
+
+If a `WhitespaceComment` would be ambiguous with a `Statement` in the `IndentedStatements` rule, parse it preferentially as a `Statement`.
+
+If an `IndentedSame` would be ambiguous with `IndentedWhitespace`, parse it preferentially as `IndentedSame`.
+
+> This is essentially "If there's a line break in a place where a `;` could go,
+> it is a line break."
+
+### Block
+
+Replace footnote 1 with:
+
+1: In the Scss syntax, only the `ScssBlock` production is valid.
+
+### Whitespace
 
 <x><pre>
-**ExplicitStatementEnd**   ::= ';'
-**StatementEnd**           ::= ExplicitStatementEnd | BlockEnd
-**BlockStart**             ::= '{'
-**BlockEnd**               ::= '}'
+**IndentedWhitespace**      ::= LineBreak | Space | Tab¹
 </pre></x>
 
-### Syntax Changes
+`LineBreak` is not whitespace in the `IncludeAtRule`, `SupportsAtRule`, [`MediaAtRule`], `KeyframesAtRule` or [`UnknownAtRule`].
 
-For the indented syntax, [StatementEnd] is replaced with:
-
-[StatementEnd]: #indented-format
-
-<x><pre>
-**StatementEnd**           ::= NewLine | ';' | BlockEnd
-</pre></x>
-
-## Procedures
-
-### Parsing text as Sass
-
-This algorithm takes a string, `text`, and a `syntax` ("indented" or "scss") and returns a Sass abstract syntax tree.
-
-* Let `BlockStart`, `BlockEnd`, `StatementEnd`, and `StatementExplicitEnd` be
-  the syntax for `syntax`.
-
-* Let `AST` be an empty syntax tree.
-
-* Let `current-statement` be a new statement.
-
-* While parsing text:
-
-  * If parsing encounters child `Statements`, set `parent` to
-    `current-statement`, and parse each child.
-
-  * If parsing produces [`StatementMayEnd`]:
-
-  [`StatementMayEnd`]: #productions-of-statementmayend
-  
-  * If the next token is `StatementEnd`, add `current-statement` to `AST`, and resume parsing `parent` if one exists.
-
-  * If the next token is `BlockEnd`, add `current-statement` to `AST`, and `parent` if one exists. If `parent` has a `parent`, continue parsing `parent`'s `parent`.
-
-    > Todo- turn into a subroutine.
-
-  * If you are at the end of `text`, return `AST`.
-
-  * Otherwise, continue.
-
-  * Otherwise, if `StatementExplicitEnd` is read, or if you are at the end of
-    `text`, throw an error.
-
-  * Otherwise, continue.
-
-### Productions of `StatementMayEnd`
-
-A `StatementMayEnd` pseudoproduction is created in the following productions:
-
-* After a SassScript value, unless the SassScript value is inside a [`BracketedListExpression`], [`MapExpression`], [`ArgumentDeclaration`], or [`OrderOfOperationsExpression`].
-
-[`BracketedListExpression`]: ../spec/types/list.md#syntax
-
-* Immediately after any `*ListExpression`, `MapExpression` or [`OrderOfOperationsExpression`].
-
-* Immediately after a `BlockEnd` in any other production.
-
-* After each space or `NewLine` in a [`CustomDeclaration`], except inside an Interpolation production.
-
-[`CustomDeclaration`]: ../spec/declarations.md#syntax
-
-* After each space or `NewLine` in an at-rule supported by CSS, including unknown at-rules, except in interpolations.
+[`MediaAtRule`]: ../spec/at-rules/media.md
+[`UnknownAtRule`]: ../spec/at-rules/unknown.md
