@@ -137,10 +137,10 @@ Replace footnote 1 with:
 ### Whitespace
 
 <x><pre>
-**IndentedWhitespace**      ::= LineBreak | Space | Tab¹
+**IndentedWhitespace**      ::= LineBreak¹ | Space | Tab
 </pre></x>
 
-`LineBreak` is not whitespace in the `IncludeAtRule`, `SupportsAtRule`, [`MediaAtRule`], `KeyframesAtRule` or [`UnknownAtRule`].
+1. `LineBreak` is not whitespace in the `IncludeAtRule`, `SupportsAtRule`, [`MediaAtRule`], `KeyframesAtRule` or [`UnknownAtRule`].
 
 [`MediaAtRule`]: ../spec/at-rules/media.md
 [`UnknownAtRule`]: ../spec/at-rules/unknown.md
