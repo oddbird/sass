@@ -149,7 +149,10 @@ $primary-color: #333
 ```
 
 In the indented syntax, authors can use curly braces to explicitly wrap a block
-of statements, but must use semicolons to separate statements inside that block. The braces essentially let authors opt in to Scss format for part of the document.
+of statements, but must use semicolons to separate statements inside that block.
+The braces essentially let authors opt in to Scss format for part of the
+document. We opted to require semicolons inside of curly braces to prevent
+issues with multiple nested formats.
 
 ```sass
 $font-stack: Helvetica, sans-serif
@@ -159,6 +162,13 @@ body {
   color: $primary-color;
 }
 ```
+
+When line breaks do not end statements, the line breaks are treated as white
+space, and do not have any requirements about the amount of indentation. Line
+breaks that do not end statements are purely aesthetic and possible in wide
+range of syntaxes, so it is up to the author to determine how to format their
+stylesheet. The next statement's indentation is compared to the indentation at
+the start of the current statement to determine nesting or block closure.
 
 ## Syntax
 
