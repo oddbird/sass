@@ -40,26 +40,32 @@ line break is treated as continuing white space.
 In addition, this proposal adds semicolons to the indented syntax as explicit
 statement ends, and allows curly braces to wrap blocks.
 
-This proposal will make it possible to include line breaks in `@font-face` declarations.
+This proposal will make it possible to include line breaks by using
+an order of operations operator, essentially wrapping the expression in parentheses.
 
 ```sass
 @font-face
   font-family: "Leatherman"
-  src:
+  src: (
     local("Leatherman"),
     url("leatherman-COLRv1.otf") format("opentype") tech(color-COLRv1),
     url("leatherman-outline.otf") format("opentype"),
     url("leatherman-outline.woff") format("woff")
+  )
 ```
 
-It also will enable line breaks in `grid-template` declarations.
+Alternatively, authors can use Scss block syntax with braces and semicolons within the indented document.
 
 ```sass
-.grid
-  display: grid
+a
+  color: blue
+
+.grid {
+  display: grid;
   grid-template:
     'logo title copy' auto
-    'alert alert alert' minmax(0, auto) / 1fr 1fr 1fr
+    'alert alert alert' minmax(0, auto) / 1fr 1fr 1fr;
+}
 ```
 
 ### Ending statements
