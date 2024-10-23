@@ -8,7 +8,7 @@ This proposal improves the indented syntax format, allowing multiline expression
 
 * [Background](#background)
 * [Summary](#summary)
-  * [Explicit statement ends](#explicit-statement-ends)
+  * [Ending statements](#ending-statements)
   * [Places where a line break must create a statement break](#places-where-a-line-break-must-create-a-statement-break)
     * [After a SassScript value](#after-a-sassscript-value)
     * [After a non-enclosed list begins](#after-a-non-enclosed-list-begins)
@@ -40,10 +40,32 @@ line break is treated as continuing white space.
 In addition, this proposal adds semicolons to the indented syntax as explicit
 statement ends, and allows curly braces to wrap blocks.
 
-### Explicit statement ends
+This proposal will make it possible to include line breaks in `@font-face` declarations.
 
-The `ExplicitStatementEnd`, `;`, will always cause a statement break. If one
-occurs in a context where a statement can not end, an error will be thrown.
+```sass
+@font-face
+  font-family: "Leatherman"
+  src:
+    local("Leatherman"),
+    url("leatherman-COLRv1.otf") format("opentype") tech(color-COLRv1),
+    url("leatherman-outline.otf") format("opentype"),
+    url("leatherman-outline.woff") format("woff")
+```
+
+It also will enable line breaks in `grid-template` declarations.
+
+```sass
+.grid
+  display: grid
+  grid-template:
+    'logo title copy' auto
+    'alert alert alert' minmax(0, auto) / 1fr 1fr 1fr
+```
+
+### Ending statements
+
+Semicolons will always cause a statement break. If one occurs in a context where
+a statement can not end, an error will be thrown.
 
 ### Places where a line break must create a statement break
 
@@ -105,15 +127,39 @@ We considered borrowing alternate syntax from other languages, such as a leading
 novel to Sass, and we instead opted to borrow syntax from the Scss format.
 
 These changes also allow authors using the indented syntax to add more explicit
-blocks and line breaks. While this introduces the changes for all authors,
-authors will still be able choose to limit the syntax with linters.
+blocks with curly braces and line breaks with semicolons. While this introduces
+the changes for all authors, authors will still be able choose to limit the
+syntax with linters.
+
+In the indented syntax, authors can use a semicolon to explicitly end a
+statement. Subsequent lines in the same block still must have the same level of
+indentation. This means that the indented format won't support multiple
+statements on a single line, even if they are separated by a semicolon.
+
+```sass
+$font-stack: Helvetica, sans-serif;
+// or
+$primary-color: #333
+```
+
+In the indented syntax, authors can use curly braces to explicitly wrap a block
+of statements, but must use semicolons to separate statements inside that block. The braces essentially let authors opt in to Scss format for part of the document.
+
+```sass
+$font-stack: Helvetica, sans-serif
+$primary-color: #333
+body {
+  font: 100% $font-stack;
+  color: $primary-color;
+}
+```
 
 ## Syntax
 
 ### IndentedStatements
 
 <x><pre>
-**IndentedStatements**  ::= (Statement (';' | IndentedSame)?¹)* Statement?
+**IndentedStatements**  ::= (Statement (';' IndentedSame | IndentedSame)?¹)* Statement?
 </pre></x>
 
 1: This production is mandatory unless the previous `Statement` is a
