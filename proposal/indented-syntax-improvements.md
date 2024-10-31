@@ -117,9 +117,9 @@ wrapped in `#{}` so line breaks do not need to end statements.
 #### At-rules
 
 For any at-rule that is supported by native CSS, line breaks after the `@` and
-before a block or statement end are not supported. This includes `@include`,
+before a block or statement are not supported. This includes `@include`,
 (which overlaps with Sass), `@supports`, `@media`, `@keyframes` and any unknown
-at rule.
+at-rule.
 
 These rules should be emitted as is, with no special handling from Sass.
 
@@ -178,22 +178,15 @@ the start of the current statement to determine nesting or block closure.
 ### IndentedStatements
 
 <x><pre>
-**IndentedStatements**  ::= (Statement (';' IndentedSame | IndentedSame)?¹)* Statement?
+**IndentedStatements**  ::= (Statement ';'? [IndentSame])\* Statement ';'?
 </pre></x>
 
-1: This production is mandatory unless the previous `Statement` is a
-`LoudComment` or `SilentComment`, or after the final production in a
-`IndentedStatements` production, which is either at the end of a `Block` or the
-end of the document.
+[IndentSame]: ../spec/statement.md#indentation
 
-If a `WhitespaceComment` would be ambiguous with a `Statement` in the
-`IndentedStatements` rule, parse it preferentially as a `Statement`.
+The `Statement` productions may include newlines outside of `IndentSame`
+productions.
 
-If an `IndentedSame` would be ambiguous with `IndentedWhitespace`, parse it
-preferentially as `IndentedSame`.
-
-> This is essentially "If there's a line break in a place where a `;` could go,
-> it is a line break."
+> TODO: Specify when newlines are parsed as IndentSame
 
 ### Block
 
@@ -201,14 +194,22 @@ Replace footnote 1 with:
 
 1: In the Scss syntax, only the `ScssBlock` production is valid.
 
+#### WhitespaceComment
+
+In footnote 2, remove:
+
+In the indented syntax, this may not contain newlines.
+
 ### Whitespace
 
-<x><pre>
-**IndentedWhitespace**      ::= LineBreak¹ | Space | Tab
-</pre></x>
+Replace footnote 1 with:
 
-1. `LineBreak` is not whitespace in the `IncludeAtRule`, `SupportsAtRule`,
-   [`MediaAtRule`], `KeyframesAtRule` or [`UnknownAtRule`].
+1. In the indented syntax, `LineBreak` is not whitespace in the `IncludeAtRule`,
+   `SupportsAtRule`, [`MediaAtRule`], `KeyframesAtRule` or [`UnknownAtRule`].
 
 [`MediaAtRule`]: ../spec/at-rules/media.md
 [`UnknownAtRule`]: ../spec/at-rules/unknown.md
+
+### Indentation
+
+> TODO: Changes
