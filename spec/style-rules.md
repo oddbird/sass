@@ -6,9 +6,6 @@
   * [Current Style Rule](#current-style-rule)
   * [Current Keyframe Block](#current-keyframe-block)
 * [Semantics](#semantics)
-* [Procedures](#procedures)
-  * [Consuming a Style Rule](#consuming-a-style-rule)
-  * [Consuming a Style Rule Selector](#consuming-a-style-rule-selector)
 
 ## Definitions
 
@@ -92,31 +89,3 @@ To execute a style rule `rule`:
 
 * Otherwise, if `css` contains no children, remove it from the current module's
   CSS.
-
-## Procedures
-
-### Consuming a Style Rule
-
-This algorithm consumes `input` from a stream of [code points] and returns a single Style Rule. It takes a `syntax` of `indented` or `scss`.
-
-* Let `selector` be the result of [consuming a style rule selector] with `input` and `syntax`.
-
-[consuming a style rule selector]: #consuming-a-style-rule-selector
-
-* Let `children` be the result of [consuming Statements] with `syntax`.
-
-[consuming Statements]: statement.md#statements
-
-* Return a style rule with a selector of `selector` and children `children`.
-
-### Consuming a Style Rule Selector
-
-This algorithm consumes input from a stream of [code points] and returns a single Style Rule Selector. It takes a `syntax` of `indented` or `scss`.
-
-* Let `selector` be an empty string.
-
-* Consume the input until reaching a `{`, `}`, `;`, `!`, the end of input, or, if `syntax` is `indented`, a new line, and add it to `selector`.
-
-* If `syntax` is indented, repeat the previous step while `selector` ends with a trailing `,` and the next character in `input` is a new line.
-
-* Return `selector`.

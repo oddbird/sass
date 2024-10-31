@@ -8,8 +8,12 @@
 * [Syntax](#syntax)
   * [ScssStatements](#scssstatements)
   * [IndentedStatements](#indentedstatements)
-  * [Statements](#statements)
+  * [Stylesheet](#stylesheet)
   * [Block](#block)
+  * [Comments](#comments)
+    * [LoudComment](#loudcomment)
+    * [SilentComment](#silentcomment)
+    * [WhitespaceComment](#whitespacecomment)
   * [Whitespace](#whitespace)
   * [Indentation](#indentation)
 
@@ -17,36 +21,42 @@
 
 ### Current indentation level
 
-The `current indentation level` is the count of the [`documentation indentation character`] between a new line and any non-whitespace characters of the last consumed line.
+The `current indentation level` is the count of the [`documentation indentation
+character`] between a new line and any non-whitespace characters of the last
+consumed statement. Lines that only contain whitespace or do not start a
+statement do not impact the `current indentation level`.
 
-A document may not begin with whitespace, and the initial `current indentation level` for any document is `0`.
+A document parsed in the indented syntax may not begin with whitespace, and the
+initial `current indentation level` for any document is `0`.
 
-Changes in the indentation level are used by the indented syntax to start and end blocks of statements.
+> Changes in the indentation level are used by the indented syntax to start and
+> end blocks of statements.
 
 [`documentation indentation character`]: #document-indentation-character
 
 ### Document indentation character
 
-The `document indentation character` is the character used for calculating the [`current indentation level`], and is either a space or tab character.
+The `document indentation character` is defined as the first tab or space
+character used in an [`IndentMore`] production in a document.
+
+[`IndentMore`]: #indentation
+
+> The `document indentation character` is the character used for calculating the
+> [`current indentation level`]. In the indented syntax, no character other than
+> the `document indentation character` may be used for indentation.
 
 [`current indentation level`]: #current-indentation-level
-
-It is defined as the first tab or space character used as an [IndentMore] production in a document.
-
-In the indented syntax, no character other than the `document indentation character` may be used for indentation.
 
 ## Syntax
 
 ### ScssStatements
 
 <x><pre>
-**ScssStatements**      ::= (Statement ';'?¹)*Statement?
+**ScssStatements**      ::= (Statement ';'?¹)* Statement?
 </pre></x>
 
 1: This production is mandatory unless the previous `Statement` is a
-`LoudComment` or `SilentComment`, or after the final production in a
-`ScssStatements` production, which is either at the end of a `Block` or the end
-of the document.
+`LoudComment`, `SilentComment`, or ends in a `Block`.
 
 If a `WhitespaceComment` would be ambiguous with a `Statement` in the
 `ScssStatements` rule, parse it preferentially as a `Statement`.
@@ -54,75 +64,115 @@ If a `WhitespaceComment` would be ambiguous with a `Statement` in the
 ### IndentedStatements
 
 <x><pre>
-**IndentedStatements**  ::= (Statement IndentedSame?¹)* Statement?
+**IndentedStatements**  ::= (Statement [IndentSame])* Statement
 </pre></x>
 
-1: This production is mandatory unless the previous `Statement` is a
-`LoudComment` or `SilentComment`, or after the final production in a
-`IndentedStatements` production, which is either at the end of a `Block` or the
-end of the document.
+[IndentSame]: #indentation
 
-If a `WhitespaceComment` would be ambiguous with a `Statement` in the `IndentedStatements` rule, parse it preferentially as a `Statement`.
+The `Statement` productions may not include newlines outside of `IndentSame`
+productions.
 
-> TODO: Should it be IndentedSame | IndentedLess
-
-### Statements
+### Stylesheet
 
 <x><pre>
-**Statements**          ::= [ScssStatements] | [IndentedStatements]¹
+**Stylesheet**          ::= U+FEFF? ([ScssStatements] | [IndentedStatements])¹
 </pre></x>
 
 [ScssStatements]: #scssstatements
 [IndentedStatements]: #indentedstatements
 
-Only the production for the current syntax is valid.
+1: Only the production for the current syntax is valid.
 
 ### Block
 
 <x><pre>
 **ScssBlock**      ::= '{' [ScssStatements] '}'
-**IndentedBlock**  ::= [IndentMore] [IndentedStatements] [IndentLess]
-**Block**          ::= ScssBlock | IndentedBlock¹
+**IndentedBlock**  ::= [IndentMore] [IndentedStatements]
+**Block**          ::= (ScssBlock | IndentedBlock)¹
 </pre></x>
 
 [IndentMore]: #indentation
-[IndentLess]: #indentation
 
 1: Only the production for the current syntax is valid.
 
-### Whitespace
+### Comments
 
-> Whitespace separates productions inside a statement when disambiguation is
-> necessary. The Whitespace productions do not separate Statements.
+#### LoudComment
 
 <x><pre>
-**LineBreak**               ::= CarriageReturn | LineFeed | FormFeed
-**ScssWhitespace**          ::= LineBreak | Space | Tab
-**IndentedWhitespace**      ::= Space | Tab
+**ScssLoudComment**          ::= '/\*' (.\*¹ | Interpolation)\* '\*/'
+**InterpolatedCommentText**  ::= (.\*² | Interpolation)\*
+**IndentedLoudChildren**     ::= (InterpolatedCommentText [IndentSame])\*
+&#32;                            InterpolatedCommentText
+**IndentedLoudComment**      ::= '/\*' InterpolatedCommentText
+&#32;                            ([IndentMore] IndentedLoudChildren)?
+**LoudComment**              ::= (ScssLoudComment | IndentedLoudComment)³
 </pre></x>
 
-> TODO: Make it clear that comments that contain newlines don't currently count
-> as whitespace for the indented syntax. Is that different than this?
+1. This may not contain `#{` or `*/`.
+2. This may not contain `#{` or newlines.
+3. Only the production for the current syntax is valid.
+
+#### SilentComment
+
+<x><pre>
+**ScssSilentComment**          ::= '//' .\*¹
+**CommentText**                ::= .\*²
+**IndentedSilentChildren**     ::= (CommentText [IndentSame])\* CommentText
+**IndentedSilentComment**      ::= '//' CommentText ([IndentMore]
+&#32;                              IndentedSilentChildren)?
+**SilentComment**              ::= (ScssSilentComment | IndentedSilentComment)³
+</pre></x>
+
+1. This may not contain newlines.
+2. This may not contain newlines outside of [IndentSame] productions.
+3. Only the production for the current syntax is valid.
+
+#### WhitespaceComment
+
+<x><pre>
+**ScssWhitespaceComment**          ::= '//' .\*¹ | '/\*' .\*² '\*/'
+**IndentedWhitespaceComment**      ::= ('/\*' .\*² '\*/') | ('//' .\*¹)
+**WhitespaceComment**³             ::= ScssWhitespaceComment
+&#32;                                | IndentedWhitespaceComment
+</pre></x>
+
+1. This may not contain newlines.
+2. This may not contain `*/` or newlines.
+3. Only the production for the current syntax is valid.
+
+### Whitespace
+
+<x><pre>
+**LineBreak**  ::= CarriageReturn | LineFeed | FormFeed
+**Whitespace** ::= LineBreak¹ | Space | Tab | [WhitespaceComment]
+</pre></x>
+
+1: This is not allowed in the indented syntax.
+1: Only the production for the current syntax is valid.
+
+[WhitespaceComment]: #whitespacecomment
 
 ### Indentation
 
 <x><pre>
-**IndentCharacter**         ::= Space | Tab
-**IndentSame**              ::= [IndentCharacter]{ Current }
-**IndentLess**              ::= [IndentCharacter]{ 0, Current - 1 }
-**IndentMore**              ::= [IndentCharacter]{ Current + 1, }
+**WhitespaceOnlyLine**          ::= IndentSame? Whitespace\* [LineBreak]
+**IndentSame**                  ::= [LineBreak] WhitespaceOnlyLine\*
+&#32;                               [IndentCharacter]{ Current }
+**IndentCharacter**             ::= Space | Tab
+**IndentMore**                  ::= WhitespaceOnlyLine\* [LineBreak]
+&#32;                               [IndentCharacter]{ ≥ Current + 1 }
 </pre></x>
 
+[LineBreak]: #whitespace
 [IndentCharacter]: #whitespace
 
-The [IndentCharacter] must be the [Document indentation character].
+The [IndentCharacter] must be the [document indentation character].
 
-> TODO: Does end of file need to be mentioned? `IndentCharacter{0}` or `IndentLess` equal to number of unclosed `IndentMore`?
+[document indentation character]: #document-indentation-character
 
-[Document indentation character]: #document-indentation-character
+`Current` is the [current indentation level] for a document. After consuming an
+`IndentSame` or `IndentMore` production, the [current indentation level] is set
+to the number of [IndentCharacter]s found.
 
-`Current` is the [current indentation level] for a document. After consuming an Indent* production, the [current indentation level] is set to the number of [IndentCharacter]s found.
-
-> TODO: Remove this comment.
-> Use Less and More rather than directional (up, down, lower, below) to prevent
-> ambiguity.
+[current indentation level]: #current-indentation-level

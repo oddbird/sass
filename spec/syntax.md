@@ -12,10 +12,8 @@
   * [`SpecialFunctionExpression`](#specialfunctionexpression)
   * [`PseudoSelector`](#pseudoselector)
   * [`ProductExpression`](#productexpression)
-  * [`ArgumentDeclaration`](#argumentdeclaration)
 * [Procedures](#procedures)
   * [Parsing Text](#parsing-text)
-  * [Parsing Text as the indented syntax](#parsing-text-as-the-indented-syntax)
   * [Parsing Text as CSS](#parsing-text-as-css)
   * [Consuming an Identifier](#consuming-an-identifier)
   * [Consuming an Interpolated Identifier](#consuming-an-interpolated-identifier)
@@ -97,13 +95,12 @@ No whitespace is allowed between components of an `InterpolatedUnquotedUrlConten
 > a normal SassScript expression.
 
 <x><pre>
-**SpecialFunctionExpression** ::= SpecialFunctionName [InterpolatedDeclarationValue] ')'
+**SpecialFunctionExpression** ::= SpecialFunctionName InterpolatedDeclarationValue ')'
 **SpecialFunctionName**¹      ::= VendorPrefix? ('element(' | 'expression(')
 &#32;                           | VendorPrefix 'calc('
 **VendorPrefix**¹             ::= '-' ([identifier-start code point] | [digit]) '-'
 </pre></x>
 
-[InterpolatedDeclarationValue]: ./declarations.md#syntax
 [digit]: https://drafts.csswg.org/css-syntax-3/#digit
 
 1: Both `SpecialFunctionName` and `VendorPrefix` are matched case-insensitively,
@@ -147,16 +144,6 @@ parentheses.
 **ProductExpression** ::= (ProductExpression ('*' | '%'))? UnaryPlusExpression
 </pre></x>
 
-### `ArgumentDeclaration`
-
-<x><pre>
-ArgumentDeclaration ::= '(' [CommaListExpression] ')'
-</pre></x>
-
-> Todo: Add productions for optional, keyword, rest, arguments
-
-[CommaListExpression]: ./types/list.md#syntax
-
 ## Procedures
 
 ### Parsing Text
@@ -171,12 +158,6 @@ or "scss"), and returns a Sass abstract syntax tree.
   CSS](#parsing-text-as-css).
 
 * If `syntax` is "scss", return the result of parsing `text` as SCSS.
-
-### Parsing Text as the indented syntax
-
-This algorithm takes a string `text` and returns a Sass abstract syntax tree.
-
-* Return
 
 ### Parsing Text as CSS
 
