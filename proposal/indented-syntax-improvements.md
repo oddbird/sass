@@ -2,7 +2,8 @@
 
 *([Issue](https://github.com/sass/sass/issues/216))*
 
-This proposal improves the indented syntax format, allowing multiline expressions, semicolons, and curly braces.
+This proposal improves the indented syntax format, allowing multiline
+expressions, semicolons, and curly braces.
 
 ## Table of Contents
 
@@ -54,7 +55,8 @@ an order of operations operator, essentially wrapping the expression in parenthe
   )
 ```
 
-Alternatively, authors can use Scss block syntax with braces and semicolons within the indented document.
+Alternatively, authors can use Scss block syntax with braces and semicolons
+within the indented document.
 
 ```sass
 a
@@ -97,8 +99,8 @@ statement after `$a`, but `@if ($a \n and $b)` can be parsed.
 
 #### After a non-enclosed list begins
 
-A line break in a list that is not in a `BracketedListExpression` or enclosed in `()` must
-cause a statement break.
+A line break in a list that is not in a `BracketedListExpression` or enclosed in
+`()` must cause a statement break.
 
 `$var: 1 2\n3` and `$var: 1, 2\n, 3` can not be parsed to determine when the
 statement has ended. Alternates `$var: (1 2\n3)`, `$var: [1 2\n3]`, and `$var:
@@ -116,7 +118,8 @@ wrapped in `#{}` so line breaks do not need to end statements.
 
 For any at-rule that is supported by native CSS, line breaks after the `@` and
 before a block or statement end are not supported. This includes `@include`,
-(which overlaps with Sass), `@supports`, `@media`, `@keyframes` and any unknown at rule.
+(which overlaps with Sass), `@supports`, `@media`, `@keyframes` and any unknown
+at rule.
 
 These rules should be emitted as is, with no special handling from Sass.
 
@@ -183,9 +186,11 @@ the start of the current statement to determine nesting or block closure.
 `IndentedStatements` production, which is either at the end of a `Block` or the
 end of the document.
 
-If a `WhitespaceComment` would be ambiguous with a `Statement` in the `IndentedStatements` rule, parse it preferentially as a `Statement`.
+If a `WhitespaceComment` would be ambiguous with a `Statement` in the
+`IndentedStatements` rule, parse it preferentially as a `Statement`.
 
-If an `IndentedSame` would be ambiguous with `IndentedWhitespace`, parse it preferentially as `IndentedSame`.
+If an `IndentedSame` would be ambiguous with `IndentedWhitespace`, parse it
+preferentially as `IndentedSame`.
 
 > This is essentially "If there's a line break in a place where a `;` could go,
 > it is a line break."
@@ -202,7 +207,8 @@ Replace footnote 1 with:
 **IndentedWhitespace**      ::= LineBreak¹ | Space | Tab
 </pre></x>
 
-1. `LineBreak` is not whitespace in the `IncludeAtRule`, `SupportsAtRule`, [`MediaAtRule`], `KeyframesAtRule` or [`UnknownAtRule`].
+1. `LineBreak` is not whitespace in the `IncludeAtRule`, `SupportsAtRule`,
+   [`MediaAtRule`], `KeyframesAtRule` or [`UnknownAtRule`].
 
 [`MediaAtRule`]: ../spec/at-rules/media.md
 [`UnknownAtRule`]: ../spec/at-rules/unknown.md
