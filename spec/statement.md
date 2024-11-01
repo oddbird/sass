@@ -119,14 +119,16 @@ productions.
 **ScssSilentComment**          ::= '//' .\*¹
 **CommentText**                ::= .\*²
 **IndentedSilentChildren**     ::= (CommentText [IndentSame])\* CommentText
-**IndentedSilentComment**      ::= '//' CommentText ([IndentMore]
-&#32;                              IndentedSilentChildren)?
+**IndentedSilentComment**      ::= '//' CommentText
+&#32;                              ([IndentMore] IndentedSilentChildren)?
 **SilentComment**              ::= (ScssSilentComment | IndentedSilentComment)³
 </pre></x>
 
 1. This may not contain newlines.
-2. This may not contain newlines outside of [IndentSame] productions.
+2. This may not contain newlines outside of [WhitespaceOnlyLine] productions.
 3. Only the production for the current syntax is valid.
+
+[WhitespaceOnlyLine]: #indentation
 
 #### WhitespaceComment
 
@@ -169,6 +171,6 @@ The IndentCharacter must be the [document indentation character].
 
 `Current` is the [current indentation level] for a document. After consuming an
 `IndentSame` or `IndentMore` production, the [current indentation level] is set
-to the number of [IndentCharacter]s found.
+to the number of IndentCharacters found.
 
 [current indentation level]: #current-indentation-level
