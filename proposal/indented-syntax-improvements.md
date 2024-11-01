@@ -167,11 +167,13 @@ body {
 ```
 
 When line breaks do not end statements, the line breaks are treated as white
-space, and do not have any requirements about the amount of indentation. Line
-breaks that do not end statements are purely aesthetic and possible in wide
-range of syntaxes, so it is up to the author to determine how to format their
-stylesheet. The next statement's indentation is compared to the indentation at
-the start of the current statement to determine nesting or block closure.
+space, and do not have any requirements about the amount of indentation. The
+next statement's indentation is compared to the indentation at the start of the
+current statement to determine nesting or block closure.
+
+Line breaks that do not end statements are purely aesthetic and possible in a
+wide range of syntaxes, so it is up to the author to determine how to format
+their stylesheet.
 
 ## Syntax
 
@@ -183,10 +185,10 @@ the start of the current statement to determine nesting or block closure.
 
 [IndentSame]: ../spec/statement.md#indentation
 
-The `Statement` productions may include newlines outside of `IndentSame`
-productions.
+Remove the following prose:
 
-> TODO: Specify when newlines are parsed as IndentSame
+The `Statement` productions may not include newlines outside of `IndentSame`
+productions.
 
 ### Block
 
@@ -209,7 +211,3 @@ Replace footnote 1 with:
 
 [`MediaAtRule`]: ../spec/at-rules/media.md
 [`UnknownAtRule`]: ../spec/at-rules/unknown.md
-
-### Indentation
-
-> TODO: Changes
